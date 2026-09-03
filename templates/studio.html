@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Photo Frame Studio & 3D Visualizer - Flipkart PhotoFrames{% endblock %}
+
+{% block content %}
+<div class="studio-wrapper">
+  
+  <!-- LEFT: LIVE VISUALIZER CANVAS & ROOM SCENE -->
+  <div class="studio-stage">
+    
+    <!-- Top Bar: Room Background Picker & Info -->
+    <div class="studio-stage-topbar">
+      <div style="font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-eye" style="color: var(--fk-blue);"></i> Wall Preview Mode:
+      </div>
+      
+      <div class="studio-room-picker">
+        <button class="room-btn active" data-room="living" title="Modern Living Room">
+          <i class="fa-solid fa-couch"></i> Living Room
+        </button>
+        <button class="room-btn" data-room="bedroom" title="Minimal Bedroom">
+          <i class="fa-solid fa-bed"></i> Bedroom
+        </button>
+        <button class="room-btn" data-room="office" title="Creative Office">
+          <i class="fa-solid fa-briefcase"></i> Office
+        </button>
+        <button class="room-btn" data-room="plain" title="Clean Wall">
+          <i class="fa-solid fa-border-all"></i> Studio
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Canvas Container -->
+    <div id="studioCanvasContainer" class="studio-canvas-container wall-living">
+      <canvas id="frameCanvas"></canvas>
+
+      <!-- Floating Canvas Adjusters (Zoom, Pan, Rotate) -->
+      <div class="studio-canvas-controls">
+        <button id="btnZoomIn" class="canvas-ctrl-btn" title="Zoom In">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+        </button>
+        <button id="btnZoomOut" class="canvas-ctrl-btn" title="Zoom Out">
+          <i class="fa-solid fa-magnifying-glass-minus"></i>
+        </button>
+        <div class="canvas-ctrl-divider"></div>
+        <button id="btnRotate" class="canvas-ctrl-btn" title="Rotate 90 Degrees">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button id="btnResetView" class="canvas-ctrl-btn" title="Reset View & Center">
+          <i class="fa-solid fa-arrows-to-dot"></i>
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align: center; padding: 6px; font-size: 11px; color: #64748b; background: rgba(255,255,255,0.7); border-top: 1px solid var(--fk-border);">
+      <i class="fa-solid fa-hand-pointer"></i> Click & drag on the photo to adjust framing position.
+    </div>
+
+  </div>
+
+  <!-- RIGHT: FRAME CUSTOMIZATION CONTROLS -->
+  <div class="studio-sidebar">
+    <div class="studio-sidebar-scroll">
+
+      <!-- STEP 1: UPLOAD PHOTO -->
+      <div class="studio-section">
+        <div class="studio-sec-title">
+          <span>1. Upload Your Photo</span>
+          <span class="studio-sec-badge">High Resolution</span>
+        </div>
+
+        <div id="studioUploadBox" class="studio-upload-box" onclick="document.getElementById('studioPhotoInput').click()">
+          <input type="file" id="studioPhotoInput" accept="image/jpeg,image/png,image/webp,image/heic" style="display: none;">
+          <div class="upload-icon">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div class="upload-label">Click or Drag & Drop Photo Here</div>
+          <div class="upload-sub">Supports High-Res JPG, PNG, WEBP (Up to 32MB)</div>
+        </div>
+
+        <div id="uploadPreviewRow" class="upload-preview-row" style="display: none;">
+          <img id="uploadedThumb" class="upload-thumb" src="" alt="Thumbnail">
+          <div style="flex: 1; overflow: hidden;">
+            <div id="uploadedFileName" style="font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+            <div style="font-size: 11px; color: var(--fk-green); font-weight: 600;">
+              <i class="fa-solid fa-circle-check"></i> High-Res File Loaded for Print
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: SELECT FRAME MATERIAL & STYLE -->
+      <div class="studio-section">
+        <div class="studio-sec-title">
+          <span>2. Choose Frame Style</span>
+        </div>
+
+        <div class="frame-swatch-grid">
+          
+          <div class="frame-swatch-card active" data-frame="walnut">
+            <div class="swatch-color-box" style="background: #3e2723; border: 2px solid #5d4037;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Solid Walnut Wood</span>
+              <span class="swatch-sub">Rich Dark Wood</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="black">
+            <div class="swatch-color-box" style="background: #171717; border: 2px solid #2e2e2e;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Nordic Matte Black</span>
+              <span class="swatch-sub">Modern Aluminium</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="gold">
+            <div class="swatch-color-box" style="background: #d4af37; border: 2px solid #f9e076;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Royal Gold Leaf</span>
+              <span class="swatch-sub">Baroque Heritage</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="oak">
+            <div class="swatch-color-box" style="background: #c8a265; border: 2px solid #dfbe87;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Scandinavian Oak</span>
+              <span class="swatch-sub">Natural Light Wood</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="white">
+            <div class="swatch-color-box" style="background: #ffffff; border: 2px solid #cbd5e1;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Gallery White Box</span>
+              <span class="swatch-sub">Clean Contemporary</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="acrylic">
+            <div class="swatch-color-box" style="background: linear-gradient(135deg, #e0f2fe, #f8fafc); border: 2px solid #94a3b8;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Floating Acrylic</span>
+              <span class="swatch-sub">Chrome Standoffs</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="barnwood">
+            <div class="swatch-color-box" style="background: #6d655f; border: 2px solid #8d857f;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Rustic Barnwood</span>
+              <span class="swatch-sub">Distressed Timber</span>
+            </div>
+          </div>
+
+          <div class="frame-swatch-card" data-frame="canvas">
+            <div class="swatch-color-box" style="background: #1f1f1f; border: 2px solid #444;"></div>
+            <div class="swatch-info">
+              <span class="swatch-title">Canvas Shadow Box</span>
+              <span class="swatch-sub">Deep Floating Box</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STEP 3: FRAME DIMENSIONS -->
+      <div class="studio-section">
+        <div class="studio-sec-title">
+          <span>3. Select Frame Dimensions</span>
+        </div>
+
+        <div class="size-grid">
+          <div class="size-pill" data-size="6x4">
+            <span class="size-dim">6 x 4"</span>
+            <span class="size-price">₹499</span>
+          </div>
+          <div class="size-pill" data-size="8x10">
+            <span class="size-dim">8 x 10"</span>
+            <span class="size-price">₹649</span>
+          </div>
+          <div class="size-pill active" data-size="12x18">
+            <span class="size-dim">12 x 18"</span>
+            <span class="size-price">₹899</span>
+          </div>
+          <div class="size-pill" data-size="16x24">
+            <span class="size-dim">16 x 24"</span>
+            <span class="size-price">₹1,299</span>
+          </div>
+          <div class="size-pill" data-size="20x30">
+            <span class="size-dim">20 x 30"</span>
+            <span class="size-price">₹1,799</span>
+          </div>
+          <div class="size-pill" data-size="24x36">
+            <span class="size-dim">24 x 36"</span>
+            <span class="size-price">₹2,399</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: PASSE-PARTOUT / MATTING -->
+      <div class="studio-section">
+        <div class="studio-sec-title">
+          <span>4. Matting / Border</span>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <span style="font-size: 13px; color: var(--fk-text-main); font-weight: 500;">Mat Color:</span>
+          <div class="mat-swatches">
+            <div class="mat-color-dot active" data-mat="offwhite" style="background: #fcfbf7;" title="Museum Off-White"></div>
+            <div class="mat-color-dot" data-mat="cream" style="background: #f5f0e1;" title="Warm Cream"></div>
+            <div class="mat-color-dot" data-mat="charcoal" style="background: #2d3748;" title="Charcoal Grey"></div>
+            <div class="mat-color-dot" data-mat="black" style="background: #111111;" title="Pure Black"></div>
+            <div class="mat-color-dot" data-mat="none" style="background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;" title="No Mat">X</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 13px; color: var(--fk-text-main); font-weight: 500;">Mat Width:</span>
+          <select id="matWidthSelect" style="padding: 6px 12px; border-radius: 4px; border: 1px solid var(--fk-border); font-size: 13px; outline: none;">
+            <option value="1.0">1.0 Inch Border</option>
+            <option value="1.5" selected>1.5 Inch (Recommended)</option>
+            <option value="2.0">2.0 Inch Wide Border</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STEP 5: GLASS FINISH -->
+      <div class="studio-section" style="border-bottom: none;">
+        <div class="studio-sec-title">
+          <span>5. Glass & Protection</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="fk-pill-btn glass-pill-btn active" data-glass="Anti-Glare Acrylic">
+            <i class="fa-solid fa-shield-halved" style="color: var(--fk-blue); margin-right: 6px;"></i>
+            Anti-Glare Acrylic Glass (Shatterproof & UV Protected)
+          </div>
+          <div class="fk-pill-btn glass-pill-btn" data-glass="Clear Museum Glass">
+            <i class="fa-regular fa-gem" style="color: #64748b; margin-right: 6px;"></i>
+            Ultra-Clear Museum Glass (High Transparency)
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STICKY ACTION BAR -->
+    <div class="studio-action-bar">
+      <div class="studio-price-summary">
+        <div>
+          <span id="studioCurrentPrice" class="studio-total-price">₹899</span>
+          <span id="studioOrigPrice" style="font-size: 14px; color: var(--fk-text-muted); text-decoration: line-through; margin-left: 6px;">₹1,799</span>
+        </div>
+        <div id="studioSavingsAmount" class="studio-savings">
+          Save ₹900 (50% OFF)
+        </div>
+      </div>
+
+      <div class="studio-cta-buttons">
+        <button id="btnStudioCart" class="btn-studio-cart">
+          <i class="fa-solid fa-cart-plus"></i> Add to Cart
+        </button>
+        <button id="btnStudioBuy" class="btn-studio-buy">
+          <i class="fa-solid fa-bolt"></i> Buy Now
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/studio.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - Flipkart PhotoFrames{% endblock %}
+
+{% block content %}
+<div style="margin: 20px 0;">
+  
+  {% if cart %}
+    <div class="fk-cart-layout">
+      
+      <!-- Cart Items List -->
+      <div class="fk-cart-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--fk-border); padding-bottom: 14px; margin-bottom: 10px;">
+          <h2 style="font-size: 18px; font-weight: 700;">Flipkart Frames Cart ({{ cart|length }} custom items)</h2>
+          <button onclick="clearCart()" style="background: none; color: #c62828; font-size: 13px; font-weight: 600; cursor: pointer;">
+            <i class="fa-regular fa-trash-can"></i> Remove All
+          </button>
+        </div>
+
+        {% for item in cart %}
+          <div class="fk-cart-item-row">
+            
+            <!-- Item Mockup -->
+            <div class="fk-cart-item-img">
+              <img src="{{ item.preview_mockup_path or item.high_res_image_path }}" alt="{{ item.product_title }}">
+            </div>
+
+            <!-- Item Details & Specs -->
+            <div class="fk-cart-item-details">
+              <h4>{{ item.product_title }}</h4>
+              <div class="fk-cart-item-specs">
+                <div><strong>Dimensions:</strong> {{ item.frame_size }}</div>
+                <div><strong>Frame Type:</strong> {{ item.frame_type }}</div>
+                <div><strong>Passe-Partout:</strong> {{ item.mat_color }} Mat ({{ item.mat_width }})</div>
+                <div><strong>Glass:</strong> {{ item.glass_type }}</div>
+                <div style="color: var(--fk-green); font-weight: 600; margin-top: 4px;">
+                  <i class="fa-solid fa-circle-check"></i> High-Res Photo attached for physical printing
+                </div>
+              </div>
+
+              <div style="margin-top: 12px; display: flex; gap: 16px; font-size: 14px; font-weight: 600;">
+                <button onclick="removeFromCart({{ item.item_id }})" style="background: none; color: #212121; cursor: pointer;">
+                  REMOVE
+                </button>
+              </div>
+            </div>
+
+            <!-- Price & Quantity -->
+            <div style="text-align: right;">
+              <div style="font-size: 18px; font-weight: 700; color: var(--fk-text-main);">
+                ₹{{ "{:,.0f}".format(item.price * item.quantity) }}
+              </div>
+              <div style="font-size: 12px; color: var(--fk-green); font-weight: 600; margin-top: 4px;">
+                Free Delivery Included
+              </div>
+            </div>
+
+          </div>
+        {% endfor %}
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 16px;">
+          <a href="{{ url_for('checkout') }}" class="fk-btn-primary" style="font-size: 16px; padding: 14px 36px; text-transform: uppercase;">
+            Place Order <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Price Details Breakdown Sidebar -->
+      <div class="fk-cart-price-box">
+        <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--fk-text-muted); border-bottom: 1px solid var(--fk-border); padding-bottom: 10px; margin-bottom: 14px;">
+          Price Details
+        </h3>
+
+        <div class="fk-price-breakdown-row">
+          <span>Price ({{ cart|length }} items)</span>
+          <span>₹{{ "{:,.0f}".format(total_price) }}</span>
+        </div>
+
+        {% if discount > 0 %}
+          <div class="fk-price-breakdown-row" style="color: var(--fk-green);">
+            <span>Discount (15% Festival Offer)</span>
+            <span>- ₹{{ "{:,.0f}".format(discount) }}</span>
+          </div>
+        {% endif %}
+
+        <div class="fk-price-breakdown-row">
+          <span>Delivery Charges</span>
+          <span style="color: var(--fk-green); font-weight: 700;">FREE</span>
+        </div>
+
+        <div class="fk-price-breakdown-row">
+          <span>Packaging & Safe Transit</span>
+          <span style="color: var(--fk-green); font-weight: 700;">FREE</span>
+        </div>
+
+        <div class="fk-price-breakdown-row fk-price-total">
+          <span>Total Amount</span>
+          <span>₹{{ "{:,.0f}".format(final_total) }}</span>
+        </div>
+
+        <div style="font-size: 13px; color: var(--fk-green); font-weight: 700;">
+          You will save ₹{{ "{:,.0f}".format(discount + (total_price * 0.45)) }} on this custom order!
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid var(--fk-border); padding-top: 16px; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-shield-halved" style="font-size: 20px; color: #64748b;"></i>
+          <span>Safe and Secure Payments. 100% Authentic Products.</span>
+        </div>
+      </div>
+
+    </div>
+  {% else %}
+    <div style="background: #fff; border-radius: 4px; padding: 60px 20px; text-align: center; box-shadow: var(--fk-shadow); max-width: 800px; margin: 40px auto;">
+      <i class="fa-solid fa-cart-shopping" style="font-size: 64px; color: #cbd5e1; margin-bottom: 16px;"></i>
+      <h3 style="font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Your Cart is Empty</h3>
+      <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Explore our handcrafted wood and metal frames, upload your favorite photos, and design your custom wall frames.</p>
+      <a href="{{ url_for('studio') }}" class="fk-btn-studio" style="display: inline-flex; font-size: 15px; padding: 12px 28px;">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Open Frame Studio
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

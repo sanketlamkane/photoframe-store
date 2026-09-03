@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders & Prints - FrameCraft Studio{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 20px auto;">
+  
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    <h2 style="font-size: 20px; font-weight: 700; color: var(--fk-text-main);">My Orders & Custom Frame Prints</h2>
+    <a href="{{ url_for('studio') }}" class="fk-btn-primary" style="font-size: 13px; padding: 8px 16px;">
+      <i class="fa-solid fa-plus"></i> Create New Frame
+    </a>
+  </div>
+
+  {% if orders %}
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      {% for order in orders %}
+        <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); border: 1px solid var(--fk-border); overflow: hidden;">
+          
+          <!-- Order Header -->
+          <div style="background: #fafafa; padding: 14px 20px; border-bottom: 1px solid var(--fk-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span style="font-size: 12px; color: var(--fk-text-muted);">ORDER #</span>
+              <a href="{{ url_for('order_detail', order_number=order.order_number) }}" style="font-size: 14px; font-weight: 800; color: var(--fk-blue); margin-left: 4px; text-decoration: underline;">{{ order.order_number }}</a>
+              <span style="margin: 0 8px; color: #ccc;">|</span>
+              <span style="font-size: 12px; color: var(--fk-text-muted);">Placed on {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 700;">Total: ₹{{ "{:,.0f}".format(order.total_amount) }}</span>
+              <a href="{{ url_for('order_detail', order_number=order.order_number) }}" class="fk-btn-primary" style="font-size: 12px; padding: 6px 14px; border-radius: 20px;">
+                <i class="fa-solid fa-truck-fast"></i> Track Order
+              </a>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div style="padding: 16px 20px;">
+            {% for item in order.items %}
+              <div style="display: grid; grid-template-columns: 100px 1fr auto; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
+                
+                <div style="width: 100px; height: 100px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; background: #fafafa;">
+                  <img src="{{ item.preview_mockup_path or item.high_res_image_path }}" alt="{{ item.product_title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+
+                <div>
+                  <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">{{ item.product_title }}</h4>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
+                    <span style="background: #f1f3f6; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 600;">Size: {{ item.frame_size }}</span>
+                    <span style="background: #f1f3f6; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 600;">Frame: {{ item.frame_type }}</span>
+                    <span style="background: #f1f3f6; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 600;">Mat: {{ item.mat_color }} ({{ item.mat_width }})</span>
+                    <span style="background: #f1f3f6; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 600;">Glass: {{ item.glass_type }}</span>
+                  </div>
+                  <div style="font-size: 12px; color: var(--fk-green); font-weight: 600;">
+                    <i class="fa-solid fa-check-double"></i> High-Res Print File Attached for Lab Production
+                  </div>
+                </div>
+
+                <div style="text-align: right;">
+                  <div style="font-size: 16px; font-weight: 700; color: var(--fk-text-main);">₹{{ "{:,.0f}".format(item.price) }}</div>
+                  <div style="font-size: 12px; color: var(--fk-text-muted);">Qty: {{ item.quantity }}</div>
+                </div>
+
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Order Footer / Tracking Timeline Bar -->
+          <div style="background: #f8fafc; padding: 12px 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <strong>Delivery Address:</strong> {{ order.customer_name }}, {{ order.address_line1 }}, {{ order.city }}, {{ order.state }} - {{ order.pincode }}
+            </div>
+            <div>
+              <a href="{{ url_for('order_detail', order_number=order.order_number) }}" style="color: var(--fk-blue); font-weight: 700;">
+                View Live Stepper Timeline <i class="fa-solid fa-chevron-right"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="background: #fff; border-radius: 4px; padding: 60px 20px; text-align: center; box-shadow: var(--fk-shadow);">
+      <i class="fa-solid fa-box-open" style="font-size: 64px; color: #cbd5e1; margin-bottom: 16px;"></i>
+      <h3 style="font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">No Orders Yet</h3>
+      <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">You haven't ordered any custom photo frames yet. Upload your favourite photo and design a frame now!</p>
+      <a href="{{ url_for('studio') }}" class="fk-btn-studio" style="display: inline-flex; font-size: 14px; padding: 10px 24px;">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Open Custom Frame Studio
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

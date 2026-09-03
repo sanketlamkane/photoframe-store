@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Custom Photo Framing Studio & Lab Prints{% endblock %} - FrameCraft</title>
+  
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/studio.css') }}">
+  {% block extra_css %}{% endblock %}
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .fk-user-menu {
+      position: relative;
+      display: inline-block;
+    }
+    .fk-user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      border-radius: 4px;
+      z-index: 1000;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    .fk-user-dropdown.show {
+      display: block;
+      animation: dropdown-fade 0.15s ease;
+    }
+    @keyframes dropdown-fade {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fk-user-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #212121;
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.15s;
+    }
+    .fk-user-dropdown-item:hover {
+      background: #f8f9fa;
+      color: var(--fk-blue);
+    }
+    .fk-user-dropdown-item i {
+      color: var(--fk-blue);
+      width: 16px;
+    }
+    .fk-btn-login-white {
+      background: #fff;
+      color: var(--fk-blue);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 20px;
+      border-radius: 2px;
+      border: 1px solid #dbdbdb;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .fk-btn-login-white:hover {
+      background: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       TOP NAVIGATION BAR
+       ========================================== -->
+  <header class="fk-header">
+    <div class="fk-header-container">
+      
+      <!-- Brand Logo -->
+      <a href="{{ url_for('index') }}" class="fk-logo-wrap">
+        <div class="fk-logo-text">
+          Frame<span>Craft</span>
+        </div>
+        <div class="fk-logo-sub">
+          Custom Photo Frames & Studio
+        </div>
+      </a>
+
+      <!-- Search Box -->
+      <form id="fkSearchForm" class="fk-search-box" action="{{ url_for('product_catalog') }}" method="GET">
+        <input 
+          type="text" 
+          id="fkSearchInput" 
+          name="q" 
+          class="fk-search-input" 
+          placeholder="Search birthday frames, wedding frames, baby memories, walnut wood..." 
+          value="{{ request.args.get('q', '') }}"
+        >
+        <button type="submit" class="fk-search-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      <!-- Nav Actions -->
+      <div class="fk-nav-actions">
+        
+        <!-- Live Customizer Studio CTA -->
+        <a href="{{ url_for('studio') }}" class="fk-btn-studio" title="Open Custom Photo Frame Studio">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Upload & Customize
+        </a>
+
+        <!-- User Authentication & Account Menu -->
+        <div class="fk-user-menu">
+          {% if current_user %}
+            <button id="fkUserMenuBtn" class="fk-nav-link" style="background:none; border:none; cursor:pointer;">
+              <i class="fa-regular fa-circle-user" style="font-size: 16px;"></i>
+              <span>Hi, {{ current_user.name.split(' ')[0] }}</span>
+              <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
+            </button>
+            <div id="fkUserDropdown" class="fk-user-dropdown">
+              <div style="padding: 12px 16px; background: #f0f7ff; border-bottom: 1px solid #e0e0e0;">
+                <div style="font-weight: 700; font-size: 14px; color: #172337;">{{ current_user.name }}</div>
+                <div style="font-size: 11px; color: #666;">{{ current_user.email }}</div>
+              </div>
+              <a href="{{ url_for('my_orders') }}" class="fk-user-dropdown-item">
+                <i class="fa-solid fa-box"></i> My Orders & Photo Prints
+              </a>
+              <a href="{{ url_for('studio') }}" class="fk-user-dropdown-item">
+                <i class="fa-solid fa-crop-simple"></i> Frame Studio
+              </a>
+              <a href="{{ url_for('track_order') }}" class="fk-user-dropdown-item">
+                <i class="fa-solid fa-truck-fast"></i> Track Order Status
+              </a>
+              <a href="{{ url_for('logout') }}" class="fk-user-dropdown-item" style="color: #c62828;">
+                <i class="fa-solid fa-right-from-bracket" style="color: #c62828;"></i> Logout
+              </a>
+            </div>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="fk-btn-login-white">Login / Sign Up</a>
+          {% endif %}
+        </div>
+
+        <!-- Track Order Link -->
+        <a href="{{ url_for('track_order') }}" class="fk-nav-link" title="Track Your Order">
+          <i class="fa-solid fa-truck-fast"></i> Track
+        </a>
+
+        <!-- Shopping Cart Link -->
+        <a href="{{ url_for('view_cart') }}" class="fk-nav-link" title="Shopping Cart">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+          {% if cart_count > 0 %}
+            <span class="fk-cart-badge">{{ cart_count }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Admin Portal Link -->
+        {% if admin_logged_in %}
+          <a href="{{ url_for('admin_orders') }}" class="fk-nav-link" style="color: var(--fk-yellow);" title="Admin Order & Print Center">
+            <i class="fa-solid fa-shield-halved"></i> Admin Hub
+          </a>
+        {% else %}
+          <a href="{{ url_for('admin_login') }}" class="fk-nav-link" style="opacity: 0.85; font-size: 12px;" title="Admin Login">
+            <i class="fa-solid fa-lock"></i> Admin
+          </a>
+        {% endif %}
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       OCCASIONS & FRAME CATEGORIES MENU
+       ========================================== -->
+  <nav class="fk-cat-header">
+    <div class="fk-cat-container">
+      <a href="{{ url_for('product_catalog') }}" class="fk-cat-item">
+        <i class="fa-solid fa-border-all"></i>
+        <span>All Frames</span>
+      </a>
+      {% for cat in site_categories %}
+        <a href="{{ url_for('product_catalog', cat=cat.name) }}" class="fk-cat-item">
+          <i class="fa-solid {{ cat.icon }}"></i>
+          <span>{{ cat.name }}</span>
+        </a>
+      {% endfor %}
+      <a href="{{ url_for('studio') }}" class="fk-cat-item" style="color: #d84315;">
+        <i class="fa-solid fa-wand-magic-sparkles" style="color: #d84315;"></i>
+        <span>Live Wall Visualizer</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       MAIN CONTENT CONTAINER
+       ========================================== -->
+  <main class="fk-main">
+    
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin-top: 10px;">
+          {% for category, message in messages %}
+            <div class="fk-alert fk-alert-{{ category }}">
+              <span><i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i>{{ message }}</span>
+              <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; font-size: 16px; color: inherit;">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ==========================================
+       FOOTER
+       ========================================== -->
+  <footer class="fk-footer">
+    <div class="fk-footer-container">
+      <div class="fk-footer-col">
+        <h5>OCCASION FRAMES</h5>
+        <ul>
+          <li><a href="{{ url_for('product_catalog', cat='Wedding & Anniversary') }}">Wedding & Couple Frames</a></li>
+          <li><a href="{{ url_for('product_catalog', cat='Birthday & Milestones') }}">Birthday Special Frames</a></li>
+          <li><a href="{{ url_for('product_catalog', cat='Baby & Kids') }}">Baby & Kids Nursery Frames</a></li>
+          <li><a href="{{ url_for('product_catalog', cat='Family & Home Living') }}">Family Gallery Wall Sets</a></li>
+          <li><a href="{{ url_for('product_catalog', cat='Graduation & Achievements') }}">Degree & Certificate Frames</a></li>
+        </ul>
+      </div>
+
+      <div class="fk-footer-col">
+        <h5>STUDIO & PRINTING</h5>
+        <ul>
+          <li><a href="{{ url_for('studio') }}">Interactive Live Studio</a></li>
+          <li><a href="{{ url_for('studio') }}">Room Wall Visualizer</a></li>
+          <li><a href="#">300 GSM Archival Luster Paper</a></li>
+          <li><a href="#">Anti-Glare Shatterproof Glass</a></li>
+          <li><a href="#">Custom Passe-partout Mats</a></li>
+        </ul>
+      </div>
+
+      <div class="fk-footer-col">
+        <h5>CUSTOMER SUPPORT</h5>
+        <ul>
+          <li><a href="{{ url_for('track_order') }}">Track Order Status</a></li>
+          <li><a href="{{ url_for('my_orders') }}">My Orders & Invoices</a></li>
+          <li><a href="#">Photo Quality Guidelines</a></li>
+          <li><a href="#">Damage-Free Safe Transit</a></li>
+          <li><a href="#">Customer Care Helpline</a></li>
+        </ul>
+      </div>
+
+      <div class="fk-footer-col">
+        <h5>PRINT & FRAME PRODUCTION</h5>
+        <p style="color: #878787; margin-bottom: 8px;">
+          Handcrafted wooden mouldings, custom beveled mats, and 12-color archival pigment photo printing.
+        </p>
+        <div style="display: flex; gap: 12px; margin-top: 12px; font-size: 18px; color: #fff;">
+          <i class="fa-brands fa-instagram"></i>
+          <i class="fa-brands fa-facebook"></i>
+          <i class="fa-brands fa-pinterest"></i>
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="fk-footer-bottom">
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <span><i class="fa-solid fa-certificate" style="color: var(--fk-yellow);"></i> 100% Solid Wood Mouldings</span>
+        <span><i class="fa-solid fa-truck-shield" style="color: var(--fk-yellow);"></i> Safe Transit Box Packaging</span>
+        <span><i class="fa-solid fa-print" style="color: var(--fk-yellow);"></i> Lab-Grade High-Res Prints</span>
+      </div>
+      <div>
+        &copy; {{ current_year }} FrameCraft Studio. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tilt3d.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

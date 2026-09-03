@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Admin - FrameCraft Studio</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+  <style>
+    /* ==========================================
+       HOT DARK CYBER-GLASSMORPHISM AUTH THEME
+       ========================================== */
+    body.adm-auth-bg {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      margin: 0;
+      background-color: #060911;
+      background-image: 
+        radial-gradient(at 10% 20%, rgba(16, 185, 129, 0.2) 0px, transparent 45%),
+        radial-gradient(at 90% 80%, rgba(59, 130, 246, 0.18) 0px, transparent 45%),
+        radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Floating Blobs */
+    .ambient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .orb-1 { width: 340px; height: 340px; background: #10b981; opacity: 0.25; top: 10%; right: 15%; animation: float-orb 8s infinite alternate; }
+    .orb-2 { width: 300px; height: 300px; background: #3b82f6; opacity: 0.2; bottom: 10%; left: 15%; animation: float-orb 10s infinite alternate-reverse; }
+
+    @keyframes float-orb {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-40px) scale(1.08); }
+    }
+
+    /* 3D Glass Card */
+    .adm-auth-card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 460px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: 
+        0 25px 60px -15px rgba(0, 0, 0, 0.8),
+        0 0 35px rgba(16, 185, 129, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform-style: preserve-3d;
+      animation: card-appear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes card-appear {
+      0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 3D Floating Top Icon */
+    .adm-auth-badge {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #fff;
+      box-shadow: 
+        0 8px 24px rgba(16, 185, 129, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform: translateZ(30px);
+    }
+
+    /* Auth Tab Switcher */
+    .adm-auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .adm-auth-tab {
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      border-radius: 8px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .adm-auth-tab.active {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Input Fields */
+    .adm-input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .adm-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+
+    .adm-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f8fafc;
+      padding: 13px 16px 13px 42px;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .adm-input:focus {
+      border-color: #10b981;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+
+    .adm-input:focus + .adm-input-icon,
+    .adm-input-wrap:focus-within .adm-input-icon {
+      color: #34d399;
+    }
+
+    /* Submit Button */
+    .adm-btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      margin-top: 8px;
+    }
+
+    .adm-btn-submit:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(16, 185, 129, 0.55);
+    }
+  </style>
+</head>
+<body class="adm-auth-bg">
+
+  <!-- Ambient background glow -->
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+
+  <div class="adm-auth-card">
+    
+    <!-- Top Floating Logo Icon -->
+    <div class="adm-auth-badge">
+      <i class="fa-solid fa-user-plus"></i>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 24px;">
+      <h1 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px;">
+        Register Admin
+      </h1>
+      <p style="font-size: 13px; color: #94a3b8;">
+        Create new fulfillment operator account
+      </p>
+    </div>
+
+    <!-- Auth Tabs -->
+    <div class="adm-auth-tabs">
+      <a href="{{ url_for('admin_login') }}" class="adm-auth-tab">
+        <i class="fa-solid fa-lock"></i> Sign In
+      </a>
+      <a href="{{ url_for('admin_register') }}" class="adm-auth-tab active">
+        <i class="fa-solid fa-user-plus"></i> Register
+      </a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin-bottom: 18px;">
+          {% for category, message in messages %}
+            <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;">
+              <i class="fa-solid fa-triangle-exclamation" style="margin-right: 6px;"></i>{{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Register Form -->
+    <form action="{{ url_for('admin_register') }}" method="POST">
+      
+      <div class="adm-input-wrap">
+        <input 
+          type="text" 
+          name="name" 
+          class="adm-input" 
+          placeholder="Operator Full Name (e.g. Vikram Sharma)" 
+          required 
+          autocomplete="name"
+        >
+        <i class="fa-solid fa-signature adm-input-icon"></i>
+      </div>
+
+      <div class="adm-input-wrap">
+        <input 
+          type="text" 
+          name="username" 
+          class="adm-input" 
+          placeholder="Admin Username (e.g. vikram_lab)" 
+          required 
+          autocomplete="username"
+        >
+        <i class="fa-solid fa-user-shield adm-input-icon"></i>
+      </div>
+
+      <div class="adm-input-wrap">
+        <input 
+          type="email" 
+          name="email" 
+          class="adm-input" 
+          placeholder="Official Lab Email" 
+          required 
+          autocomplete="email"
+        >
+        <i class="fa-solid fa-envelope adm-input-icon"></i>
+      </div>
+
+      <div class="adm-input-wrap">
+        <input 
+          type="password" 
+          name="password" 
+          class="adm-input" 
+          placeholder="Master Security Password (min. 6 chars)" 
+          required 
+          minlength="6"
+          autocomplete="new-password"
+        >
+        <i class="fa-solid fa-lock adm-input-icon"></i>
+      </div>
+
+      <button type="submit" class="adm-btn-submit">
+        <i class="fa-solid fa-shield-check"></i> Create Admin & Enter Lab
+      </button>
+
+    </form>
+
+    <!-- Back to Storefront Link -->
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="{{ url_for('index') }}" style="color: #64748b; font-size: 13px; font-weight: 600; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#64748b'">
+        <i class="fa-solid fa-arrow-left"></i> Return to Storefront
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

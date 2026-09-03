@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Order - FrameCraft Studio{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 30px auto;">
+  
+  <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 28px; margin-bottom: 24px; border: 1px solid var(--fk-border);">
+    <h2 style="font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">
+      <i class="fa-solid fa-truck-fast" style="color: var(--fk-blue); margin-right: 8px;"></i>
+      Track Your Custom Photo Frame Order
+    </h2>
+    <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+      Enter your Order ID (e.g., FK-FRM-82914) to view live lab printing, assembly, and dispatch timeline.
+    </p>
+
+    <form action="{{ url_for('track_order') }}" method="POST">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Order ID *</label>
+        <input type="text" name="order_number" required placeholder="e.g. FK-FRM-A1B2C3D4" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none; text-transform: uppercase;">
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Registered Mobile Number (Optional)</label>
+        <input type="tel" name="phone" placeholder="Enter 10-digit mobile number" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+      </div>
+
+      <button type="submit" class="fk-btn-primary" style="width: 100%; justify-content: center; font-size: 15px; padding: 12px; text-transform: uppercase;">
+        <i class="fa-solid fa-magnifying-glass"></i> Track Order Status
+      </button>
+    </form>
+  </div>
+
+  {% if current_user %}
+    <div style="text-align: center;">
+      <a href="{{ url_for('my_orders') }}" style="color: var(--fk-blue); font-size: 14px; font-weight: 700;">
+        <i class="fa-solid fa-box"></i> Or view all orders in your account
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

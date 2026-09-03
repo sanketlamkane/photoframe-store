@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed - Flipkart PhotoFrames{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 30px auto;">
+  
+  <!-- Success Banner -->
+  <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 32px; text-align: center; border-top: 5px solid var(--fk-green); margin-bottom: 20px;">
+    <div style="width: 70px; height: 70px; background: #e8f5e9; color: var(--fk-green); font-size: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <h2 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">Order Placed Successfully!</h2>
+    <p style="font-size: 15px; color: #64748b;">
+      Thank you, <strong>{{ order.customer_name }}</strong>! We have received your order and the photo is queued in our production print lab.
+    </p>
+    <div style="margin-top: 16px; display: inline-block; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; font-family: monospace; font-size: 15px; font-weight: 700; color: var(--fk-blue);">
+      Order ID: {{ order.order_number }}
+    </div>
+  </div>
+
+  <!-- Live Fulfillment Timeline Tracker -->
+  <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 24px; margin-bottom: 20px;">
+    <h3 style="font-size: 15px; font-weight: 700; text-transform: uppercase; color: var(--fk-text-muted); margin-bottom: 20px;">
+      Production & Delivery Timeline
+    </h3>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; position: relative;">
+      
+      <!-- Step 1 -->
+      <div style="text-align: center;">
+        <div style="width: 36px; height: 36px; background: var(--fk-green); color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 6px;">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div style="font-size: 12px; font-weight: 700;">Order Received</div>
+        <div style="font-size: 10px; color: #64748b;">Verified & Queued</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="text-align: center;">
+        <div style="width: 36px; height: 36px; background: {% if order.order_status in ['Printing Photo', 'Frame Assembled', 'Shipped', 'Delivered'] %}var(--fk-green){% else %}#e2e8f0; color: #94a3b8{% endif %}; color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 6px;">
+          <i class="fa-solid fa-print"></i>
+        </div>
+        <div style="font-size: 12px; font-weight: 700;">Lab Photo Print</div>
+        <div style="font-size: 10px; color: #64748b;">Archival 300 GSM</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="text-align: center;">
+        <div style="width: 36px; height: 36px; background: {% if order.order_status in ['Frame Assembled', 'Shipped', 'Delivered'] %}var(--fk-green){% else %}#e2e8f0; color: #94a3b8{% endif %}; color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 6px;">
+          <i class="fa-solid fa-hammer"></i>
+        </div>
+        <div style="font-size: 12px; font-weight: 700;">Custom Assembly</div>
+        <div style="font-size: 10px; color: #64748b;">Wood cutting & mat</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div style="text-align: center;">
+        <div style="width: 36px; height: 36px; background: {% if order.order_status in ['Shipped', 'Delivered'] %}var(--fk-green){% else %}#e2e8f0; color: #94a3b8{% endif %}; color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 6px;">
+          <i class="fa-solid fa-truck-fast"></i>
+        </div>
+        <div style="font-size: 12px; font-weight: 700;">Doorstep Delivery</div>
+        <div style="font-size: 10px; color: #64748b;">Shockproof Box</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Order Items & Shipping Summary -->
+  <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 24px;">
+    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--fk-border); padding-bottom: 8px;">
+      Order Details
+    </h3>
+
+    {% for item in order.items %}
+      <div style="display: grid; grid-template-columns: 80px 1fr auto; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
+        <img src="{{ item.preview_mockup_path or item.high_res_image_path }}" alt="Preview" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #e0e0e0;">
+        <div>
+          <h4 style="font-size: 14px; font-weight: 600;">{{ item.product_title }}</h4>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
+            Size: {{ item.frame_size }} | Frame: {{ item.frame_type }} | Mat: {{ item.mat_color }}
+          </div>
+          <div style="font-size: 11px; color: var(--fk-green); font-weight: 600; margin-top: 4px;">
+            <i class="fa-solid fa-circle-check"></i> High-resolution photo file ready for admin download & printing
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 15px; font-weight: 700;">
+          ₹{{ "{:,.0f}".format(item.price * item.quantity) }}
+        </div>
+      </div>
+    {% endfor %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 14px;">
+      <div>
+        <strong>Delivery Address:</strong><br>
+        {{ order.customer_name }}, {{ order.customer_phone }}<br>
+        {{ order.address_line1 }}, {{ order.address_line2 }}<br>
+        {{ order.city }}, {{ order.state }} - {{ order.pincode }}
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 18px; font-weight: 800; color: #1e293b;">
+          Total Paid / COD: ₹{{ "{:,.0f}".format(order.total_amount) }}
+        </div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Payment Method: {{ order.payment_method }}</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 30px;">
+      <a href="{{ url_for('track_order') }}" class="fk-btn-secondary" style="border: 1px solid var(--fk-border);">
+        <i class="fa-solid fa-truck-fast"></i> Track Order Status
+      </a>
+      <a href="{{ url_for('index') }}" class="fk-btn-primary">
+        <i class="fa-solid fa-house"></i> Return to Home
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

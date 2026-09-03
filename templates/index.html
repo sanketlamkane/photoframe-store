@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Custom Photo Frames for Birthdays, Weddings, Baby & Family - FrameCraft{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================
+     HERO BANNER
+     ========================================== -->
+<div class="fk-hero-banner">
+  <div class="fk-hero-content">
+    <span class="fk-hero-tag"><i class="fa-solid fa-wand-magic-sparkles"></i> Live Wall Studio Visualizer</span>
+    <h1 class="fk-hero-title">Custom Frames for Birthdays, Weddings & Family Memories</h1>
+    <p class="fk-hero-desc">
+      Upload your photos, preview how they look inside handcrafted solid wood frames on real room walls, and order with lab-quality high-DPI archival prints.
+    </p>
+    <div class="fk-hero-btns">
+      <a href="{{ url_for('studio') }}" class="fk-btn-primary">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo & Preview
+      </a>
+      <a href="{{ url_for('product_catalog') }}" class="fk-btn-secondary">
+        <i class="fa-solid fa-grid-2"></i> Browse Occasion Frames
+      </a>
+    </div>
+  </div>
+
+  <div class="fk-hero-visual">
+    <div class="fk-hero-frame-mock" style="transform: rotate(-5deg); border-color: #d4af37;">
+      <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=500&auto=format&fit=crop&q=80" alt="Wedding Frame">
+    </div>
+    <div class="fk-hero-frame-mock" style="transform: rotate(4deg); margin-top: 20px; border-color: #3e2723;">
+      <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500&auto=format&fit=crop&q=80" alt="Birthday Frame">
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     OCCASION CATEGORIES GRID
+     ========================================== -->
+<div class="fk-section-card">
+  <div class="fk-section-header">
+    <div class="fk-section-title">
+      <i class="fa-solid fa-layer-group" style="color: var(--fk-blue);"></i>
+      Shop By Occasion & Purpose
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+    {% for cat in site_categories %}
+      <a href="{{ url_for('product_catalog', cat=cat.name) }}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div style="width: 48px; height: 48px; background: #e0f2fe; color: var(--fk-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+          <i class="fa-solid {{ cat.icon }}"></i>
+        </div>
+        <div style="font-weight: 700; font-size: 14px; color: #0f172a;">{{ cat.name }}</div>
+        <div style="font-size: 11px; color: #64748b;">{{ cat.desc }}</div>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ==========================================
+     DEALS OF THE DAY SECTION
+     ========================================== -->
+<div class="fk-section-card">
+  <div class="fk-section-header">
+    <div class="fk-section-title">
+      <i class="fa-solid fa-bolt-lightning" style="color: var(--fk-yellow); background: #212121; padding: 6px; border-radius: 50%; font-size: 14px;"></i>
+      Today's Featured Custom Frames
+      <span class="fk-section-sub"><i class="fa-regular fa-clock"></i> Free Photo Printing Included</span>
+    </div>
+    <a href="{{ url_for('product_catalog') }}" class="fk-view-all-btn">VIEW ALL</a>
+  </div>
+
+  <div class="fk-product-grid">
+    {% for prod in deals %}
+      <div class="fk-product-card">
+        <span class="fk-badge-pill fk-badge-deal">{{ prod.discount_percent }}% OFF</span>
+        
+        <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-img-wrap">
+          <img src="{{ prod.image_url }}" alt="{{ prod.title }}">
+        </a>
+
+        <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-title">
+          {{ prod.title }}
+        </a>
+
+        <div class="fk-rating-row">
+          <span class="fk-rating-badge">{{ prod.rating }} <i class="fa-solid fa-star" style="font-size: 9px;"></i></span>
+          <span class="fk-rating-count">({{ prod.rating_count }})</span>
+          <span style="font-size: 11px; color: var(--fk-blue); font-weight: 700; margin-left: auto;">{{ prod.category }}</span>
+        </div>
+
+        <div class="fk-price-row">
+          <span class="fk-current-price">₹{{ "{:,.0f}".format(prod.price) }}</span>
+          <span class="fk-orig-price">₹{{ "{:,.0f}".format(prod.original_price) }}</span>
+          <span class="fk-discount-tag">{{ prod.discount_percent }}% off</span>
+        </div>
+
+        <div class="fk-prod-actions">
+          <a href="{{ url_for('studio', slug=prod.slug) }}" class="fk-btn-customize">
+            <i class="fa-solid fa-camera"></i> Customize With Photo
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ==========================================
+     STUDIO CALLOUT
+     ========================================== -->
+<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff; border-radius: 6px; padding: 28px; margin-bottom: 20px; box-shadow: var(--fk-shadow); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+  <div style="max-width: 650px;">
+    <span style="background: var(--fk-yellow); color: #000; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
+      How Our Photo Frame Studio Works
+    </span>
+    <h3 style="font-size: 22px; font-weight: 800; margin-top: 8px; margin-bottom: 8px;">
+      1. Upload Any Photo ➔ 2. Live Room Preview ➔ 3. We Print & Handcraft The Frame
+    </h3>
+    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5;">
+      You upload your favorite photo and choose frame styles (Walnut Wood, Gold Baroque, Nordic Black, Oak, Acrylic). Our workshop prints on 300 GSM cotton archival paper, custom cuts the frame and matting, and ships it ready-to-hang to your door.
+    </p>
+  </div>
+  <a href="{{ url_for('studio') }}" class="fk-btn-studio" style="font-size: 15px; padding: 14px 28px;">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> Open Customizer Studio
+  </a>
+</div>
+
+<!-- ==========================================
+     TRENDING OCCASION FRAMES
+     ========================================== -->
+<div class="fk-section-card">
+  <div class="fk-section-header">
+    <div class="fk-section-title">
+      <i class="fa-solid fa-heart" style="color: #e11d48;"></i>
+      Trending Occasion Photo Frames
+    </div>
+    <a href="{{ url_for('product_catalog') }}" class="fk-view-all-btn">EXPLORE ALL</a>
+  </div>
+
+  <div class="fk-product-grid">
+    {% for prod in featured %}
+      <div class="fk-product-card">
+        {% if prod.badge %}
+          <span class="fk-badge-pill">{{ prod.badge }}</span>
+        {% endif %}
+        
+        <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-img-wrap">
+          <img src="{{ prod.image_url }}" alt="{{ prod.title }}">
+        </a>
+
+        <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-title">
+          {{ prod.title }}
+        </a>
+
+        <div class="fk-rating-row">
+          <span class="fk-rating-badge">{{ prod.rating }} <i class="fa-solid fa-star" style="font-size: 9px;"></i></span>
+          <span class="fk-rating-count">({{ prod.rating_count }})</span>
+          <span style="font-size: 11px; color: var(--fk-blue); font-weight: 700; margin-left: auto;">{{ prod.category }}</span>
+        </div>
+
+        <div class="fk-price-row">
+          <span class="fk-current-price">₹{{ "{:,.0f}".format(prod.price) }}</span>
+          <span class="fk-orig-price">₹{{ "{:,.0f}".format(prod.original_price) }}</span>
+          <span class="fk-discount-tag">{{ prod.discount_percent }}% off</span>
+        </div>
+
+        <div class="fk-prod-actions">
+          <a href="{{ url_for('studio', slug=prod.slug) }}" class="fk-btn-customize">
+            <i class="fa-solid fa-camera"></i> Customize With Photo
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

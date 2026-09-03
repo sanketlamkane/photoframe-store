@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }} - FrameCraft{% endblock %}
+
+{% block content %}
+<div class="fk-detail-container">
+  
+  <!-- Left Product Visuals & Action Buttons -->
+  <div class="fk-detail-left">
+    <div class="fk-detail-main-img">
+      <img src="{{ product.image_url }}" alt="{{ product.title }}">
+    </div>
+
+    <!-- Live Customizer CTA Box -->
+    <div class="fk-studio-promo-box">
+      <div class="fk-studio-promo-text">
+        <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Have a photo ready?</h4>
+        <p>See this frame with your photo in a realistic room before buying!</p>
+      </div>
+      <a href="{{ url_for('studio', slug=product.slug) }}" class="fk-btn-studio" style="white-space: nowrap;">
+        Try With My Photo
+      </a>
+    </div>
+
+    <!-- Quick Purchase Buttons -->
+    <div class="fk-detail-buttons">
+      <a href="{{ url_for('studio', slug=product.slug) }}" class="fk-btn-cart-lg">
+        <i class="fa-solid fa-camera"></i> Customize
+      </a>
+      <a href="{{ url_for('studio', slug=product.slug) }}" class="fk-btn-buy-lg">
+        <i class="fa-solid fa-bolt"></i> Buy Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Right Product Info & Specs -->
+  <div class="fk-detail-info">
+    <h1 class="fk-detail-title">{{ product.title }}</h1>
+    
+    <div class="fk-rating-row" style="margin-bottom: 12px;">
+      <span class="fk-rating-badge">{{ product.rating }} <i class="fa-solid fa-star" style="font-size: 10px;"></i></span>
+      <span class="fk-rating-count">{{ product.rating_count }} Ratings & Reviews</span>
+      <span style="background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-left: auto;">
+        <i class="fa-solid fa-certificate"></i> Lab Certified
+      </span>
+    </div>
+
+    <div class="fk-price-row" style="margin-bottom: 16px;">
+      <span class="fk-current-price" style="font-size: 28px;">₹{{ "{:,.0f}".format(product.price) }}</span>
+      <span class="fk-orig-price" style="font-size: 16px;">₹{{ "{:,.0f}".format(product.original_price) }}</span>
+      <span class="fk-discount-tag" style="font-size: 16px;">{{ product.discount_percent }}% off</span>
+    </div>
+
+    <!-- Available Frame Dimensions -->
+    <div class="fk-option-group">
+      <div class="fk-option-label">Available Dimensions</div>
+      <div class="fk-pill-group">
+        {% for dim in product.dimensions %}
+          <div class="fk-pill-btn {% if loop.first %}active{% endif %}">{{ dim }} inches</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Glass & Finish Type -->
+    <div class="fk-option-group">
+      <div class="fk-option-label">Glass & Protection</div>
+      <div class="fk-pill-group">
+        <div class="fk-pill-btn active">Anti-Glare Optical Acrylic (Shatterproof)</div>
+        <div class="fk-pill-btn">Crystal Clear Museum Glass</div>
+      </div>
+    </div>
+
+    <!-- Product Highlights -->
+    <div style="margin: 20px 0; border-top: 1px solid var(--fk-border); padding-top: 16px;">
+      <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--fk-text-muted); margin-bottom: 10px;">Highlights</h3>
+      <ul style="list-style-position: inside; color: #212121; font-size: 14px; line-height: 1.8;">
+        <li><strong>Materials:</strong> {{ product.materials }}</li>
+        <li><strong>Photo Printing:</strong> Ultra-High DPI 12-color archival pigment printing included with every order</li>
+        <li><strong>Ready to Hang:</strong> Pre-installed dual sawtooth metal brackets for both portrait & landscape</li>
+        <li><strong>Protection:</strong> UV-filtering shatterproof acrylic glass prevents color fading</li>
+      </ul>
+    </div>
+
+    <!-- Product Description -->
+    <div style="margin: 16px 0; border-top: 1px solid var(--fk-border); padding-top: 16px;">
+      <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--fk-text-muted); margin-bottom: 8px;">Description</h3>
+      <p style="font-size: 14px; color: #555; line-height: 1.6;">
+        {{ product.description }}
+      </p>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

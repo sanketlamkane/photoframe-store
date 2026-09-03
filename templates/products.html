@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Photo Frames Catalog - Flipkart PhotoFrames{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 260px 1fr; gap: 16px; margin: 16px 0;">
+  
+  <!-- Left Filter Sidebar -->
+  <div style="background: #fff; border-radius: 4px; padding: 16px; box-shadow: var(--fk-shadow); height: fit-content;">
+    <h3 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--fk-border); padding-bottom: 10px; margin-bottom: 14px;">
+      Filters
+    </h3>
+
+    <!-- Category filter -->
+    <div style="margin-bottom: 20px;">
+      <h4 style="font-size: 12px; font-weight: 700; color: var(--fk-text-muted); text-transform: uppercase; margin-bottom: 8px;">Categories</h4>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+        <a href="{{ url_for('product_catalog') }}" style="color: {% if not category %}var(--fk-blue); font-weight: 700;{% else %}#333;{% endif %}">
+          All Frames
+        </a>
+        {% for cat in site_categories %}
+          <a href="{{ url_for('product_catalog', cat=cat.name) }}" style="color: {% if category == cat.name %}var(--fk-blue); font-weight: 700;{% else %}#333;{% endif %}">
+            {{ cat.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Quick Studio Button -->
+    <div style="background: #f0f7ff; border-radius: 4px; padding: 12px; text-align: center; border: 1px dashed var(--fk-blue);">
+      <h5 style="font-size: 13px; font-weight: 700; color: var(--fk-blue); margin-bottom: 4px;">Have your own photo?</h5>
+      <p style="font-size: 11px; color: #555; margin-bottom: 8px;">Use our live 3D visualizer to preview any frame!</p>
+      <a href="{{ url_for('studio') }}" class="fk-btn-studio" style="font-size: 12px; padding: 6px 12px; justify-content: center;">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Open Visualizer
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Right Product Grid Area -->
+  <div>
+    
+    <!-- Top Sort Bar -->
+    <div style="background: #fff; border-radius: 4px; padding: 12px 16px; box-shadow: var(--fk-shadow); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+      <div style="font-size: 14px; font-weight: 600;">
+        {% if query %}
+          Showing results for "<span style="color: var(--fk-blue);">{{ query }}</span>" ({{ products|length }} items)
+        {% elif category %}
+          Showing <span style="color: var(--fk-blue);">{{ category }}</span> ({{ products|length }} items)
+        {% else %}
+          All Custom Photo Frames ({{ products|length }} items)
+        {% endif %}
+      </div>
+
+      <!-- Sort Pills -->
+      <div style="display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="color: var(--fk-text-muted); font-weight: 600;">Sort By:</span>
+        <a href="{{ url_for('product_catalog', q=query, cat=category, sort='popular') }}" style="font-weight: {% if sort == 'popular' %}700; color: var(--fk-blue); border-bottom: 2px solid var(--fk-blue);{% else %}500;{% endif %} padding-bottom: 2px;">Popularity</a>
+        <a href="{{ url_for('product_catalog', q=query, cat=category, sort='price_low') }}" style="font-weight: {% if sort == 'price_low' %}700; color: var(--fk-blue); border-bottom: 2px solid var(--fk-blue);{% else %}500;{% endif %} padding-bottom: 2px;">Price -- Low to High</a>
+        <a href="{{ url_for('product_catalog', q=query, cat=category, sort='price_high') }}" style="font-weight: {% if sort == 'price_high' %}700; color: var(--fk-blue); border-bottom: 2px solid var(--fk-blue);{% else %}500;{% endif %} padding-bottom: 2px;">Price -- High to Low</a>
+        <a href="{{ url_for('product_catalog', q=query, cat=category, sort='rating') }}" style="font-weight: {% if sort == 'rating' %}700; color: var(--fk-blue); border-bottom: 2px solid var(--fk-blue);{% else %}500;{% endif %} padding-bottom: 2px;">Customer Rating</a>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    {% if products %}
+      <div class="fk-product-grid">
+        {% for prod in products %}
+          <div class="fk-product-card">
+            {% if prod.badge %}
+              <span class="fk-badge-pill">{{ prod.badge }}</span>
+            {% endif %}
+            
+            <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-img-wrap">
+              <img src="{{ prod.image_url }}" alt="{{ prod.title }}">
+            </a>
+
+            <a href="{{ url_for('product_detail', slug=prod.slug) }}" class="fk-prod-title">
+              {{ prod.title }}
+            </a>
+
+            <div class="fk-rating-row">
+              <span class="fk-rating-badge">{{ prod.rating }} <i class="fa-solid fa-star" style="font-size: 9px;"></i></span>
+              <span class="fk-rating-count">({{ prod.rating_count }})</span>
+            </div>
+
+            <div class="fk-price-row">
+              <span class="fk-current-price">₹{{ "{:,.0f}".format(prod.price) }}</span>
+              <span class="fk-orig-price">₹{{ "{:,.0f}".format(prod.original_price) }}</span>
+              <span class="fk-discount-tag">{{ prod.discount_percent }}% off</span>
+            </div>
+
+            <div class="fk-prod-actions">
+              <a href="{{ url_for('studio', slug=prod.slug) }}" class="fk-btn-customize">
+                <i class="fa-solid fa-camera"></i> Customize Photo
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="background: #fff; border-radius: 4px; padding: 40px; text-align: center; box-shadow: var(--fk-shadow);">
+        <h3>No frames found matching your criteria.</h3>
+        <p style="margin-top: 8px; color: #777;">Try searching for "Walnut", "Black", "Gold", or "Acrylic".</p>
+        <a href="{{ url_for('product_catalog') }}" class="fk-btn-primary" style="margin-top: 16px;">View All Products</a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

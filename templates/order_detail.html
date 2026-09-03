@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.order_number }} Details - FrameCraft{% endblock %}
+
+{% block content %}
+<div class="fk-tracking-container">
+  
+  <!-- Breadcrumb -->
+  <div style="font-size: 12px; color: var(--fk-text-muted); display: flex; align-items: center; gap: 8px;">
+    <a href="{{ url_for('index') }}" style="color: var(--fk-blue);">Home</a>
+    <span>›</span>
+    <a href="{{ url_for('my_orders') }}" style="color: var(--fk-blue);">My Orders</a>
+    <span>›</span>
+    <span>{{ order.order_number }}</span>
+  </div>
+
+  <!-- Top Address & Action Card (Flipkart Style) -->
+  <div class="fk-track-address-card">
+    <div class="fk-track-address-sec">
+      <h4>Delivery Address</h4>
+      <div style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">{{ order.customer_name }}</div>
+      <p>
+        {{ order.address_line1 }}{% if order.address_line2 %}, {{ order.address_line2 }}{% endif %}<br>
+        {{ order.city }}, {{ order.state }} - <strong>{{ order.pincode }}</strong>
+      </p>
+      <div style="margin-top: 8px; font-size: 13px; color: #475569;">
+        <strong>Phone number:</strong> {{ order.customer_phone }}
+      </div>
+    </div>
+
+    <div class="fk-track-address-sec" style="border-left: 1px solid var(--fk-border); padding-left: 20px;">
+      <h4>Order Information & Actions</h4>
+      <div style="font-size: 13px; color: #475569; margin-bottom: 12px;">
+        <strong>Order ID:</strong> <span style="font-family: monospace; font-weight: 700; color: var(--fk-blue);">{{ order.order_number }}</span><br>
+        <strong>Placed on:</strong> {{ order.created_at.strftime('%d %B %Y, %I:%M %p') }}<br>
+        <strong>Payment:</strong> {{ order.payment_method }} ({{ order.payment_status }})
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button onclick="window.print()" class="fk-btn-secondary" style="font-size: 12px; padding: 8px 14px; border: 1px solid var(--fk-border);">
+          <i class="fa-solid fa-download"></i> Download Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Order Card with Items & Flipkart Stepper -->
+  {% for item in order.items %}
+    <div class="fk-track-main-card">
+      
+      <!-- Item Row -->
+      <div class="fk-track-item-header">
+        <div class="fk-track-item-img">
+          <img src="{{ item.preview_mockup_path or item.high_res_image_path }}" alt="{{ item.product_title }}">
+        </div>
+
+        <div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+            {{ item.product_title }}
+          </h3>
+          <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
+            <div><strong>Dimensions:</strong> {{ item.frame_size }}</div>
+            <div><strong>Frame Style:</strong> {{ item.frame_type }}</div>
+            <div><strong>Passe-Partout Mat:</strong> {{ item.mat_color }} ({{ item.mat_width }})</div>
+            <div><strong>Glass Type:</strong> {{ item.glass_type }}</div>
+          </div>
+          <div style="font-size: 11px; color: var(--fk-green); font-weight: 700; margin-top: 6px;">
+            <i class="fa-solid fa-circle-check"></i> High-Res Photo attached for physical printing
+          </div>
+        </div>
+
+        <div style="text-align: right;">
+          <div style="font-size: 20px; font-weight: 800; color: #0f172a;">
+            ₹{{ "{:,.0f}".format(item.price * item.quantity) }}
+          </div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Qty: {{ item.quantity }}</div>
+          <div style="font-size: 11px; color: var(--fk-green); font-weight: 700; margin-top: 4px;">
+            Free Express Shipping
+          </div>
+        </div>
+      </div>
+
+      <!-- THE FLIPKART TRACKER STEPPER TIMELINE -->
+      <div class="fk-tracker-wrapper">
+        <div class="fk-stepper-horizontal">
+          
+          <!-- STEP 1: ORDER CONFIRMED -->
+          <div class="fk-step-node completed">
+            <div class="fk-step-circle">✓</div>
+            <div class="fk-step-title">Order Confirmed</div>
+            <div class="fk-step-desc">Order placed & image received</div>
+            <div class="fk-step-date">{{ order.created_at.strftime('%a, %d %b') }}</div>
+          </div>
+
+          <!-- STEP 2: LAB PHOTO PRINT -->
+          {% set is_printing_done = order.order_status in ['Printing Photo', 'Frame Assembled', 'Shipped', 'Delivered'] %}
+          {% set is_printing_active = order.order_status == 'Printing Photo' %}
+          <div class="fk-step-node {% if is_printing_done %}completed{% endif %} {% if is_printing_active %}active{% endif %}">
+            <div class="fk-step-circle">
+              {% if is_printing_done %}✓{% else %}2{% endif %}
+            </div>
+            <div class="fk-step-title">Photo Printing</div>
+            <div class="fk-step-desc">Archival 300 GSM lab print</div>
+            <div class="fk-step-date">{% if is_printing_done %}In Progress / Done{% else %}Pending{% endif %}</div>
+          </div>
+
+          <!-- STEP 3: CUSTOM FRAME ASSEMBLY -->
+          {% set is_assembled_done = order.order_status in ['Frame Assembled', 'Shipped', 'Delivered'] %}
+          {% set is_assembled_active = order.order_status == 'Frame Assembled' %}
+          <div class="fk-step-node {% if is_assembled_done %}completed{% endif %} {% if is_assembled_active %}active{% endif %}">
+            <div class="fk-step-circle">
+              {% if is_assembled_done %}✓{% else %}3{% endif %}
+            </div>
+            <div class="fk-step-title">Frame Assembled</div>
+            <div class="fk-step-desc">Custom wood cut & matting</div>
+            <div class="fk-step-date">{% if is_assembled_done %}Completed{% else %}Pending{% endif %}</div>
+          </div>
+
+          <!-- STEP 4: SHIPPED / IN TRANSIT -->
+          {% set is_shipped_done = order.order_status in ['Shipped', 'Delivered'] %}
+          {% set is_shipped_active = order.order_status == 'Shipped' %}
+          <div class="fk-step-node {% if is_shipped_done %}completed{% endif %} {% if is_shipped_active %}active{% endif %}">
+            <div class="fk-step-circle">
+              {% if is_shipped_done %}✓{% else %}4{% endif %}
+            </div>
+            <div class="fk-step-title">Shipped / In Transit</div>
+            <div class="fk-step-desc">Dispatched in safe box</div>
+            <div class="fk-step-date">
+              {% if order.tracking_number %}
+                Track: {{ order.tracking_number }}
+              {% elif is_shipped_done %}
+                Shipped
+              {% else %}
+                Expected soon
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- STEP 5: DELIVERED -->
+          {% set is_delivered_done = order.order_status == 'Delivered' %}
+          <div class="fk-step-node {% if is_delivered_done %}completed active{% endif %}">
+            <div class="fk-step-circle">
+              {% if is_delivered_done %}✓{% else %}5{% endif %}
+            </div>
+            <div class="fk-step-title">Delivered</div>
+            <div class="fk-step-desc">Delivered to doorstep</div>
+            <div class="fk-step-date">{% if is_delivered_done %}Delivered{% else %}Estimated 3-5 days{% endif %}</div>
+          </div>
+
+        </div>
+
+        {% if order.tracking_number %}
+          <div class="fk-courier-banner">
+            <div>
+              <i class="fa-solid fa-truck-fast"></i> <strong>Courier Partner:</strong> Express Dispatch | <strong>Tracking ID:</strong> <span style="font-family: monospace; font-weight: 700;">{{ order.tracking_number }}</span>
+            </div>
+            <span style="font-weight: 700;">Out For Delivery</span>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  {% endfor %}
+
+  <!-- Back Link -->
+  <div style="text-align: center; margin-top: 10px;">
+    <a href="{{ url_for('my_orders') }}" style="color: var(--fk-blue); font-weight: 700; font-size: 14px;">
+      <i class="fa-solid fa-arrow-left"></i> Back to My Orders
+    </a>
+  </div>
+
+</div>
+{% endblock %}

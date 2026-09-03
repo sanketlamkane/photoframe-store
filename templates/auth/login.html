@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - FrameCraft Studio{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; background: #fff; box-shadow: var(--fk-shadow); border-radius: 4px; overflow: hidden; display: grid; grid-template-columns: 320px 1fr; min-height: 480px;">
+  
+  <!-- Left Blue Column -->
+  <div style="background: var(--fk-blue); color: #fff; padding: 40px 32px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+    <div>
+      <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 16px;">Sign In</h2>
+      <p style="font-size: 15px; color: #e0e8ff; line-height: 1.5;">Access your custom photo frame orders, print status, and saved room visualizer mockups.</p>
+    </div>
+    <div style="text-align: center; margin-top: 30px;">
+      <i class="fa-solid fa-camera-retro" style="font-size: 80px; color: rgba(255,255,255,0.25);"></i>
+    </div>
+  </div>
+
+  <!-- Right Form Column -->
+  <div style="padding: 40px 32px; display: flex; flex-direction: column; justify-content: space-between;">
+    <form action="{{ url_for('login') }}" method="POST">
+      <input type="hidden" name="next" value="{{ next }}">
+      
+      <div style="margin-bottom: 24px;">
+        <label style="display: block; font-size: 12px; color: #878787; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Email or Mobile Number</label>
+        <input 
+          type="text" 
+          name="identifier" 
+          required 
+          placeholder="Enter Email / Mobile number" 
+          style="width: 100%; border: none; border-bottom: 1px solid #e0e0e0; padding: 10px 0; font-size: 15px; outline: none; transition: border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--fk-blue)'"
+          onblur="this.style.borderColor='#e0e0e0'"
+        >
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <label style="display: block; font-size: 12px; color: #878787; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Password</label>
+        <input 
+          type="password" 
+          name="password" 
+          required 
+          placeholder="Enter Password" 
+          style="width: 100%; border: none; border-bottom: 1px solid #e0e0e0; padding: 10px 0; font-size: 15px; outline: none; transition: border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--fk-blue)'"
+          onblur="this.style.borderColor='#e0e0e0'"
+        >
+      </div>
+
+      <p style="font-size: 12px; color: #878787; line-height: 1.4; margin-bottom: 24px;">
+        By continuing, you agree to FrameCraft's Terms of Use and Privacy Policy.
+      </p>
+
+      <button type="submit" style="width: 100%; background: var(--fk-orange); color: #fff; font-size: 15px; font-weight: 700; padding: 12px; border-radius: 2px; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+        LOGIN TO CONTINUE
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="{{ url_for('register', next=next) }}" style="color: var(--fk-blue); font-size: 14px; font-weight: 700;">
+        New to FrameCraft? Create an account
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

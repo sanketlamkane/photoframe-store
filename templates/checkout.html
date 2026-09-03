@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - FrameCraft Studio{% endblock %}
+
+{% block content %}
+<div style="margin: 20px 0;">
+  
+  <div class="fk-cart-layout">
+    
+    <!-- Left Checkout Form -->
+    <div>
+      <form action="{{ url_for('checkout') }}" method="POST" id="checkoutForm">
+        
+        <!-- STEP 1: LOGGED IN USER VERIFICATION -->
+        <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 16px 20px; margin-bottom: 16px; border-left: 4px solid var(--fk-green);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="background: var(--fk-green); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">✓</span>
+              <div>
+                <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Step 1: Account Verified</div>
+                <div style="font-size: 14px; font-weight: 700; color: #1e293b;">
+                  {{ user.name }} <span style="font-weight: normal; color: #64748b; margin-left: 6px;">({{ user.email }})</span>
+                </div>
+              </div>
+            </div>
+            <span style="font-size: 12px; color: var(--fk-green); font-weight: 700;">
+              <i class="fa-solid fa-shield-check"></i> Logged In
+            </span>
+          </div>
+        </div>
+
+        <!-- STEP 2: DELIVERY ADDRESS (SAVED ADDRESSES + NEW ADDRESS FORM) -->
+        <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 20px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="background: var(--fk-blue); color: #fff; width: 24px; height: 24px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">2</span>
+              <h3 style="font-size: 15px; font-weight: 700; color: #212121; text-transform: uppercase;">
+                Delivery Address For Frame Shipment
+              </h3>
+            </div>
+            {% if saved_addresses %}
+              <button type="button" onclick="toggleNewAddressForm()" id="btnToggleAddr" style="background: none; border: none; color: var(--fk-blue); font-size: 13px; font-weight: 700; cursor: pointer;">
+                <i class="fa-solid fa-plus"></i> Add New Address
+              </button>
+            {% endif %}
+          </div>
+
+          <!-- SAVED ADDRESSES SELECTOR -->
+          {% if saved_addresses %}
+            <div id="savedAddressesList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+              {% for addr in saved_addresses %}
+                <label style="border: 2px solid {% if loop.first %}var(--fk-blue){% else %}#e2e8f0{% endif %}; border-radius: 6px; padding: 16px; display: flex; gap: 14px; cursor: pointer; background: {% if loop.first %}#f0f7ff{% else %}#fff{% endif %}; transition: all 0.2s;" class="saved-addr-card" onclick="selectSavedAddress({{ addr.id }}, '{{ addr.name|replace("'", "\\'") }}', '{{ addr.phone }}', '{{ addr.pincode }}', '{{ addr.address_line1|replace("'", "\\'") }}', '{{ (addr.address_line2 or '')|replace("'", "\\'") }}', '{{ addr.city|replace("'", "\\'") }}', '{{ addr.state|replace("'", "\\'") }}', '{{ addr.address_type }}', this)">
+                  <input type="radio" name="selected_saved_addr" value="{{ addr.id }}" {% if loop.first %}checked{% endif %} style="margin-top: 4px;">
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                      <strong style="font-size: 15px; color: #0f172a;">{{ addr.name }}</strong>
+                      <span style="background: #e2e8f0; color: #475569; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; text-transform: uppercase;">{{ addr.address_type }}</span>
+                      <strong style="font-size: 13px; color: #334155; margin-left: 8px;">{{ addr.phone }}</strong>
+                    </div>
+                    <div style="font-size: 13px; color: #475569; line-height: 1.5;">
+                      {{ addr.address_line1 }}{% if addr.address_line2 %}, {{ addr.address_line2 }}{% endif %}, {{ addr.city }}, {{ addr.state }} - <strong>{{ addr.pincode }}</strong>
+                    </div>
+                  </div>
+                </label>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <!-- ADDRESS INPUT FORM -->
+          <div id="addressFormSection" style="{% if saved_addresses %}display: none; background: #fafafa; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 18px; margin-top: 10px;{% endif %}">
+            
+            {% if saved_addresses %}
+              <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <span>Enter New Delivery Address</span>
+                <span onclick="toggleNewAddressForm()" style="color: #64748b; font-size: 12px; cursor: pointer;">Cancel</span>
+              </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Full Name *</label>
+                <input type="text" id="custName" name="customer_name" required value="{% if saved_addresses %}{{ saved_addresses[0].name }}{% else %}{{ user.name }}{% endif %}" placeholder="Recipient name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">10-Digit Mobile Number *</label>
+                <input type="tel" id="custPhone" name="customer_phone" required value="{% if saved_addresses %}{{ saved_addresses[0].phone }}{% else %}{{ user.phone or '' }}{% endif %}" placeholder="Enter mobile number for delivery updates" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Email Address *</label>
+                <input type="email" id="custEmail" name="customer_email" required value="{{ user.email }}" placeholder="Order receipt will be sent here" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Pincode *</label>
+                <input type="text" id="custPincode" name="pincode" required value="{% if saved_addresses %}{{ saved_addresses[0].pincode }}{% endif %}" placeholder="6 digit delivery pincode" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Flat, House No., Building, Apartment *</label>
+              <input type="text" id="custAddr1" name="address_line1" required value="{% if saved_addresses %}{{ saved_addresses[0].address_line1 }}{% endif %}" placeholder="House / Flat / Floor / Building name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Area, Street, Sector, Landmark</label>
+              <input type="text" id="custAddr2" name="address_line2" value="{% if saved_addresses %}{{ saved_addresses[0].address_line2 or '' }}{% endif %}" placeholder="Street / Colony / Landmark" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Town / City *</label>
+                <input type="text" id="custCity" name="city" required value="{% if saved_addresses %}{{ saved_addresses[0].city }}{% endif %}" placeholder="City name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">State *</label>
+                <input type="text" id="custState" name="state" required value="{% if saved_addresses %}{{ saved_addresses[0].state }}{% endif %}" placeholder="State name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
+              </div>
+            </div>
+
+            <!-- Address Type & Save Checkbox -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Address Type:</span>
+                <label style="font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="address_type" value="HOME" checked> Home
+                </label>
+                <label style="font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="address_type" value="WORK"> Work / Office
+                </label>
+              </div>
+
+              <label style="font-size: 13px; font-weight: 600; color: var(--fk-blue); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" name="save_address" value="1" checked>
+                Save this address in my profile
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STEP 3: ORDER ITEMS SUMMARY -->
+        <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 20px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <span style="background: var(--fk-blue); color: #fff; width: 24px; height: 24px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">3</span>
+            <h3 style="font-size: 15px; font-weight: 700; color: #212121; text-transform: uppercase;">
+              Order Summary ({{ cart|length }} custom frame{% if cart|length > 1 %}s{% endif %})
+            </h3>
+          </div>
+
+          {% for item in cart %}
+            <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
+              <img src="{{ item.preview_mockup_path or item.high_res_image_path }}" alt="Mockup" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #e0e0e0; border-radius: 3px;">
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 600;">{{ item.product_title }}</div>
+                <div style="font-size: 11px; color: #64748b;">
+                  {{ item.frame_size }} | {{ item.frame_type }} | Mat: {{ item.mat_color }}
+                </div>
+              </div>
+              <div style="font-size: 14px; font-weight: 700;">
+                ₹{{ "{:,.0f}".format(item.price * item.quantity) }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- STEP 4: PAYMENT OPTIONS -->
+        <div style="background: #fff; border-radius: 4px; box-shadow: var(--fk-shadow); padding: 20px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="background: var(--fk-blue); color: #fff; width: 24px; height: 24px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">4</span>
+            <h3 style="font-size: 15px; font-weight: 700; color: #212121; text-transform: uppercase;">
+              Payment Options
+            </h3>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <label style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #fafafa;">
+              <input type="radio" name="payment_method" value="COD" checked>
+              <div>
+                <strong style="font-size: 14px; color: #1e293b;">Cash on Delivery (COD)</strong>
+                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Pay upon delivery of your assembled frame at your doorstep.</p>
+              </div>
+            </label>
+
+            <label style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #fafafa;">
+              <input type="radio" name="payment_method" value="UPI">
+              <div>
+                <strong style="font-size: 14px; color: #1e293b;">UPI / QR Code Instant Pay (Google Pay, PhonePe, Paytm)</strong>
+                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Fast and instant payment verification with zero processing fees.</p>
+              </div>
+            </label>
+
+            <label style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #fafafa;">
+              <input type="radio" name="payment_method" value="Card">
+              <div>
+                <strong style="font-size: 14px; color: #1e293b;">Credit / Debit Card / Net Banking</strong>
+                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">All major Indian & international cards supported.</p>
+              </div>
+            </label>
+
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button type="submit" class="fk-btn-primary" style="width: 100%; font-size: 16px; padding: 14px; justify-content: center; text-transform: uppercase;">
+              <i class="fa-solid fa-lock"></i> Confirm & Place Order (₹{{ "{:,.0f}".format(final_total) }})
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Right Sidebar Price Details -->
+    <div class="fk-cart-price-box">
+      <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--fk-text-muted); border-bottom: 1px solid var(--fk-border); padding-bottom: 10px; margin-bottom: 14px;">
+        Price Details
+      </h3>
+
+      <div class="fk-price-breakdown-row">
+        <span>Price ({{ cart|length }} items)</span>
+        <span>₹{{ "{:,.0f}".format(total_price) }}</span>
+      </div>
+
+      {% if discount > 0 %}
+        <div class="fk-price-breakdown-row" style="color: var(--fk-green);">
+          <span>Discount (15% Offer)</span>
+          <span>- ₹{{ "{:,.0f}".format(discount) }}</span>
+        </div>
+      {% endif %}
+
+      <div class="fk-price-breakdown-row">
+        <span>Delivery Charges</span>
+        <span style="color: var(--fk-green); font-weight: 700;">FREE</span>
+      </div>
+
+      <div class="fk-price-breakdown-row fk-price-total">
+        <span>Total Payable</span>
+        <span>₹{{ "{:,.0f}".format(final_total) }}</span>
+      </div>
+
+      <div style="font-size: 12px; color: #64748b; line-height: 1.6; background: #f0f7ff; padding: 10px; border-radius: 4px; border: 1px solid #d0e1fd;">
+        <strong style="color: var(--fk-blue);"><i class="fa-solid fa-camera"></i> High-DPI Lab Print:</strong>
+        Your uploaded image file is linked to your order and will be printed in ultra-crisp lab resolution.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function selectSavedAddress(id, name, phone, pincode, addr1, addr2, city, state, type, element) {
+    // Highlight selected card
+    document.querySelectorAll('.saved-addr-card').forEach(c => {
+      c.style.borderColor = '#e2e8f0';
+      c.style.background = '#fff';
+    });
+    element.style.borderColor = 'var(--fk-blue)';
+    element.style.background = '#f0f7ff';
+    element.querySelector('input[type="radio"]').checked = true;
+
+    // Auto-populate hidden/visible form fields
+    document.getElementById('custName').value = name;
+    document.getElementById('custPhone').value = phone;
+    document.getElementById('custPincode').value = pincode;
+    document.getElementById('custAddr1').value = addr1;
+    document.getElementById('custAddr2').value = addr2 || '';
+    document.getElementById('custCity').value = city;
+    document.getElementById('custState').value = state;
+
+    // Hide manual form
+    const formSec = document.getElementById('addressFormSection');
+    if (formSec) formSec.style.display = 'none';
+  }
+
+  function toggleNewAddressForm() {
+    const formSec = document.getElementById('addressFormSection');
+    if (!formSec) return;
+    if (formSec.style.display === 'none' || formSec.style.display === '') {
+      formSec.style.display = 'block';
+      // Clear for new address entry
+      document.getElementById('custAddr1').value = '';
+      document.getElementById('custAddr2').value = '';
+      document.getElementById('custPincode').value = '';
+      document.getElementById('custCity').value = '';
+      document.getElementById('custState').value = '';
+      document.getElementById('custAddr1').focus();
+    } else {
+      formSec.style.display = 'none';
+    }
+  }
+</script>
+{% endblock %}
