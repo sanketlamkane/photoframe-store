@@ -60,12 +60,27 @@ def save_uploaded_file(file_storage, folder_sub='originals'):
 def save_base64_preview(base64_data_uri, folder_sub='previews'):
     """
     Saves the preview mockup canvas generated in the browser.
+    Uploads directly to Cloudinary if configured, or saves locally.
     """
     import base64
     import re
     if not base64_data_uri or not base64_data_uri.startswith('data:image'):
         return None
         
+    if Config.USE_CLOUDINARY:
+        import cloudinary.uploader
+        try:
+            upload_res = cloudinary.uploader.upload(
+                base64_data_uri,
+                folder=f"photoframe/{folder_sub}",
+                public_id=f"preview_{uuid.uuid4().hex[:10]}",
+                resource_type="image"
+            )
+            return upload_res.get('secure_url')
+        except Exception as e:
+            print(f"Cloudinary preview upload error, falling back to local: {e}")
+
+    # Local storage fallback
     img_format, img_str = base64_data_uri.split(';base64,')
     ext = re.search(r'image/(\w+)', img_format).group(1)
     if ext == 'jpeg': ext = 'jpg'
