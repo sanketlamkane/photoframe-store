@@ -427,7 +427,53 @@
     grid-template-columns: 1fr;
     height: auto;
   }
+  .studio-stage {
+    position: sticky;
+    top: 60px;
+    z-index: 10;
+  }
   .studio-canvas-container {
-    min-height: 400px;
+    min-height: 360px;
+    max-height: 480px;
+  }
+  .studio-sidebar-scroll {
+    padding-bottom: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .studio-stage-topbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .studio-room-picker {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .studio-room-picker::-webkit-scrollbar {
+    display: none;
+  }
+  .room-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .studio-canvas-container {
+    min-height: 300px;
+    max-height: 380px;
+  }
+  .studio-actions-footer {
+    position: fixed;
+    bottom: 56px;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 10px 14px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.12);
+    z-index: 990;
+    border-top: 1px solid var(--fk-border);
   }
 }

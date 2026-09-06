@@ -288,6 +288,42 @@
     </div>
   </footer>
 
+  <!-- ==========================================
+       MOBILE APP BOTTOM NAVIGATION BAR
+       ========================================== -->
+  <div class="fk-mobile-bottom-nav">
+    <a href="{{ url_for('index') }}" class="fk-mobile-bottom-item {% if request.endpoint == 'index' %}active{% endif %}">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="{{ url_for('product_catalog') }}" class="fk-mobile-bottom-item {% if request.endpoint == 'product_catalog' %}active{% endif %}">
+      <i class="fa-solid fa-border-all"></i>
+      <span>Frames</span>
+    </a>
+    <a href="{{ url_for('studio') }}" class="fk-mobile-bottom-item studio-highlight {% if request.endpoint == 'studio' %}active{% endif %}">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <span>Visualizer</span>
+    </a>
+    <a href="{{ url_for('view_cart') }}" class="fk-mobile-bottom-item {% if request.endpoint == 'view_cart' %}active{% endif %}">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>Cart</span>
+      {% if cart_count > 0 %}
+        <span class="fk-mobile-cart-badge">{{ cart_count }}</span>
+      {% endif %}
+    </a>
+    {% if current_user %}
+      <a href="{{ url_for('my_orders') }}" class="fk-mobile-bottom-item {% if request.endpoint in ['my_orders', 'user_addresses'] %}active{% endif %}">
+        <i class="fa-solid fa-user-check"></i>
+        <span>Account</span>
+      </a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="fk-mobile-bottom-item {% if request.endpoint in ['login', 'register'] %}active{% endif %}">
+        <i class="fa-regular fa-user"></i>
+        <span>Login</span>
+      </a>
+    {% endif %}
+  </div>
+
   <!-- Scripts -->
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script src="{{ url_for('static', filename='js/cart.js') }}"></script>

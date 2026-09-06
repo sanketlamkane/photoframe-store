@@ -41,7 +41,7 @@ def inject_global_vars():
     
     current_user = None
     if 'user_id' in session:
-        user_obj = User.query.get(session['user_id'])
+        user_obj = db.session.get(User, session['user_id'])
         if user_obj:
             current_user = user_obj
             

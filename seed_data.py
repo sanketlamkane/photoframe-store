@@ -1,9 +1,21 @@
-from models import db, Product, Order, OrderItem
+from models import db, Product, Order, OrderItem, AdminUser
 import datetime
 
 def seed_database():
-    # Clear existing and reseed with Occasion-based Photo Frames
-    Product.query.delete()
+    # Only seed initial sample products if database is empty to preserve data permanently
+    if Product.query.first():
+        # Ensure default admin user exists without wiping data
+        if not AdminUser.query.filter_by(username='admin').first():
+            admin = AdminUser(
+                username='admin',
+                name='Print Lab Master Admin',
+                email='admin@framecraft.com',
+                role='Super Admin'
+            )
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+        return
     
     sample_products = [
         Product(
@@ -153,5 +165,16 @@ def seed_database():
     ]
     
     db.session.bulk_save_objects(sample_products)
+    
+    if not AdminUser.query.filter_by(username='admin').first():
+        admin = AdminUser(
+            username='admin',
+            name='Print Lab Master Admin',
+            email='admin@framecraft.com',
+            role='Super Admin'
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        
     db.session.commit()
-    print("Database reseeded with Occasion-based Photo Frames!")
+    print("Database initialized with Occasion-based Photo Frames & Admin Account!")

@@ -552,3 +552,18 @@ body.admin-body {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .adm-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  .adm-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .adm-table-card {
+    overflow-x: auto;
+  }
+}

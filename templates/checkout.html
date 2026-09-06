@@ -76,7 +76,7 @@
               </div>
             {% endif %}
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="fk-form-grid-2">
               <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Full Name *</label>
                 <input type="text" id="custName" name="customer_name" required value="{% if saved_addresses %}{{ saved_addresses[0].name }}{% else %}{{ user.name }}{% endif %}" placeholder="Recipient name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
@@ -87,7 +87,7 @@
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="fk-form-grid-2">
               <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Email Address *</label>
                 <input type="email" id="custEmail" name="customer_email" required value="{{ user.email }}" placeholder="Order receipt will be sent here" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
@@ -108,7 +108,7 @@
               <input type="text" id="custAddr2" name="address_line2" value="{% if saved_addresses %}{{ saved_addresses[0].address_line2 or '' }}{% endif %}" placeholder="Street / Colony / Landmark" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="fk-form-grid-2">
               <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Town / City *</label>
                 <input type="text" id="custCity" name="city" required value="{% if saved_addresses %}{{ saved_addresses[0].city }}{% endif %}" placeholder="City name" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none;">

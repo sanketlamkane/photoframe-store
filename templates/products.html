@@ -3,12 +3,18 @@
 {% block title %}Photo Frames Catalog - Flipkart PhotoFrames{% endblock %}
 
 {% block content %}
-<div style="display: grid; grid-template-columns: 260px 1fr; gap: 16px; margin: 16px 0;">
+<div class="fk-catalog-layout">
   
+  <!-- Mobile Filter Toggle Button -->
+  <button class="fk-filter-toggle-btn" onclick="document.getElementById('catalogFilterSidebar').classList.toggle('open')">
+    <i class="fa-solid fa-sliders"></i> Filter Frames & Occasions
+  </button>
+
   <!-- Left Filter Sidebar -->
-  <div style="background: #fff; border-radius: 4px; padding: 16px; box-shadow: var(--fk-shadow); height: fit-content;">
-    <h3 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--fk-border); padding-bottom: 10px; margin-bottom: 14px;">
-      Filters
+  <div id="catalogFilterSidebar" class="fk-filter-sidebar">
+    <h3 style="font-size: 15px; font-weight: 700; border-bottom: 1px solid var(--fk-border); padding-bottom: 10px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+      <span>Filters</span>
+      <span style="font-size: 11px; color: var(--fk-blue); cursor: pointer;" onclick="document.getElementById('catalogFilterSidebar').classList.remove('open')">Done</span>
     </h3>
 
     <!-- Category filter -->
