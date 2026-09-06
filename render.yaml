@@ -2,6 +2,8 @@ services:
   - type: web
     name: framecraft-studio
     env: python
+    plan: free
+    branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
@@ -9,7 +11,10 @@ services:
         value: 3.11.8
       - key: SECRET_KEY
         generateValue: true
+      - key: DATABASE_URL
+        value: postgresql://postgres.bahypjzuouoplaydudep:Sanket%409922@aws-0-ap-south-1.pooler.supabase.com:5432/postgres
       - key: ADMIN_USERNAME
         value: admin
       - key: ADMIN_PASSWORD
         value: admin123
+
